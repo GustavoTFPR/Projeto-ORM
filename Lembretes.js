@@ -5,7 +5,9 @@ Git:
 git init
 git add .
 git commit -m "primeiro commit"
+git remote -v (verificar se o repositório remoto foi adicionado corretamente)
 git remote add origin https://github.com/seuusuario/repositorio.git
+git remote set-url origin githublink (se o url do repositório remoto mudar, usar esse comando para atualizar o url do repositório remoto)
 git push -u origin main (--force para forçar o push, caso haja divergências entre o repositório local e o remoto)
 git branch (see witch branch u are)
 git branch -M main (change branch to main)
@@ -15,6 +17,8 @@ git rebase --continue
 Para ignroar pastas e arquivos: criar um arquivo .gitignore e colocar o nome da pasta ou arquivo que deseja ignorar, exemplo:
 node_modules/
 .env
+.DS_Store
+Thumbs.db
 
 
 Java:
