@@ -1,18 +1,16 @@
-import {Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column("varchar")
-    firstName!: string;
+  @Column("varchar")
+  firstName!: string;
 
-    @Column("varchar")
-    lastName!: string;
+  @Column("varchar")
+  lastName!: string;
 
-    @Column({type: "boolean", default: true})
-    isActive!: boolean;
-
-
+  @Column({ type: "boolean", default: true })
+  isActive!: boolean;
 }
