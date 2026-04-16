@@ -12,11 +12,11 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/api/users/2
+DELETE http://localhost:3000/api/users/7
 
 ###
 
-PATCH  http://localhost:3000/api/users/3
+PATCH  http://localhost:3000/api/users/8
 Content-Type: application/json
 
 {
