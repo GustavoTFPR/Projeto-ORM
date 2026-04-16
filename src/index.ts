@@ -1,7 +1,7 @@
 import express, { type Application } from "express";
 import "reflect-metadata";
 import { AppDataSource } from "./data-source";
-import { userRoutes } from "../routes/userRoutes";
+import { userRoutes } from "./routes/userRoutes";
 
 const app: Application = express();
 app.use(express.json());

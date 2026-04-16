@@ -33,6 +33,32 @@ export class UserController {
         .json({ error: "Ocorreu um erro inesperado ao listar os usuários." });
     }
   }
+
+  async update(req: Request, res: Response) {
+    try {
+      const id = Number(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "ID inválido." });
+      }
+      const { firstName, lastName } = req.body;
+      const user = await this.userRepository.findOneBy({ id });
+      if (!user) {
+        return res.status(404).json({ error: "Usuário não encontrado." });
+      }
+      user.firstName = firstName ?? user.firstName;
+      user.lastName = lastName ?? user.lastName;
+      await this.userRepository.save(user);
+      return res.json(user);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return res.status(400).json({ error: error.message });
+      }
+      return res
+        .status(500)
+        .json({ error: "Ocorreu um erro inesperado ao atualizar o usuário." });
+    }
+  }
+
   async delete(req: Request, res: Response) {
     try {
       const id  = Number(req.params.id);
