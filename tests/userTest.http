@@ -1,36 +1,25 @@
-### Create a new user
+GET http://localhost:3000/api/users
+
+###
+
 POST http://localhost:3000/api/users
 Content-Type: application/json
 
 {
-  "firstName": "Johnny",
-  "lastName": "Silverhand",
-  "isActive": true
+  "firstName": "Marco Aurelio",
+  "lastName": "Hansen"
 }
 
-### Get all users
-GET http://localhost:3000/api/users
+###
 
-### Get a user by ID
-GET http://localhost:3000/api/users/2
-
-### Update a user
-PUT http://localhost:3000/api/users/2
-Content-Type: application/json
-
-{
-  "firstName": "Vincent",
-  "lastName": "Vega",
-  "isActive": false
-}
-
-### Delete a user
 DELETE http://localhost:3000/api/users/2
 
-### Update a user
-PATCH http://localhost:3000/api/users/1
+###
+
+PATCH  http://localhost:3000/api/users/3
 Content-Type: application/json
 
 {
-  "isActive": false
+  "firstName": "Marco Aurelio",
+  "lastName": "Hansen"
 }
