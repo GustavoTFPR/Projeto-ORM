@@ -42,4 +42,62 @@ export class PostController {
       next(error);
     }
   };
+
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { title, content } = req.body;
+  
+      if (isNaN(Number(id))) {
+        throw new BadRequestError("ID inválido.");
+      }
+  
+      const post = await this.postRepository.findOne({
+        where: { id: Number(id) },
+        relations: ["user"],
+      });
+      if (!post) {
+        throw new NotFoundError("Post não encontrado.");
+      }
+  
+      if (title) {
+        post.title = title;
+      }
+      if (content) {
+        post.content = content;
+      }
+
+    const errors = await validate(post);
+    if (errors.length > 0) {
+      const formattedErrors = formatErrors(errors);
+      throw new BadRequestError("Falha de validação", formattedErrors);
+    }
+
+    const updatedPost = await this.postRepository.save(post);
+    return res.status(200).json(updatedPost);
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+delete = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+
+    if (isNaN(Number(id))) {
+      throw new BadRequestError("ID inválido.");
+    }
+
+    const post = await this.postRepository.findOneBy({ id: Number(id) });
+    if (!post) {
+      throw new NotFoundError("Post não encontrado.");
+    }
+
+    await this.postRepository.remove(post);
+    return res.status(204).send();
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
 }
