@@ -45,59 +45,54 @@ export class PostController {
 
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params;
-      const { title, content } = req.body;
-  
-      if (isNaN(Number(id))) {
-        throw new BadRequestError("ID inválido.");
+      const postId = Number(req.params.id);
+      const { title, content, userId } = req.body;
+      if (isNaN(postId)) {
+        throw new BadRequestError("Id do post inválido");
       }
-  
-      const post = await this.postRepository.findOne({
-        where: { id: Number(id) },
-        relations: ["user"],
+      const post = await this.postRepository.findOneBy({
+        id: postId,
       });
       if (!post) {
-        throw new NotFoundError("Post não encontrado.");
+        throw new NotFoundError("Post não encontrado");
       }
-  
-      if (title) {
-        post.title = title;
+      if (userId) {
+        if (isNaN(userId)) {
+          throw new BadRequestError("Id do usuário inválido");
+        }
+        const user = await this.userRepository.findOneBy({ id: userId });
+        if (!user) {
+          throw new NotFoundError("Usuário não encontrado.");
+        }
+        post.user = user ?? post.user;
       }
-      if (content) {
-        post.content = content;
+      post.title = title ?? post.title;
+      post.content = content ?? post.content;
+      const errors = await validate(post);
+      if (errors.length > 0) {
+        const formattedErrors = formatErrors(errors);
+        throw new BadRequestError("Falha de validação", formattedErrors);
       }
-
-    const errors = await validate(post);
-    if (errors.length > 0) {
-      const formattedErrors = formatErrors(errors);
-      throw new BadRequestError("Falha de validação", formattedErrors);
+      await this.postRepository.save(post);
+      return res.status(200).json(post);
+    } catch (error: unknown) {
+      next(error);
     }
+  };
 
-    const updatedPost = await this.postRepository.save(post);
-    return res.status(200).json(updatedPost);
-  } catch (error: unknown) {
-    next(error);
-  }
-};
-
-delete = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } = req.params;
-
-    if (isNaN(Number(id))) {
-      throw new BadRequestError("ID inválido.");
+  delete = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = Number(req.params.id);
+      if (isNaN(id)) {
+        throw new BadRequestError("ID inválido");
+      }
+      const result = await this.postRepository.delete(id);
+      if (result.affected === 0) {
+        throw new NotFoundError("Post não encontrado");
+      }
+      return res.status(204).send();
+    } catch (error: unknown) {
+      next(error);
     }
-
-    const post = await this.postRepository.findOneBy({ id: Number(id) });
-    if (!post) {
-      throw new NotFoundError("Post não encontrado.");
-    }
-
-    await this.postRepository.remove(post);
-    return res.status(204).send();
-  } catch (error: unknown) {
-    next(error);
-  }
-};
-
+  };
 }

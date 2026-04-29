@@ -1,4 +1,4 @@
 export interface IValidationError {
-    field: string;
-    messages: string[];
-  }
+  field: string;
+  messages: string[];
+}

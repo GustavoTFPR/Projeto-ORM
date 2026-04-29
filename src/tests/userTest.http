@@ -12,8 +12,9 @@ POST http://localhost:3000/api/users
 Content-Type: application/json
 
 {
-  "firstName": "Marco Aurelio",
-  "lastName": "Hansen"
+  "firstName": "Gustavo",
+  "lastName": "TF",
+  "phone": "(24) 992233-4455"
 }
 
 ###
@@ -26,8 +27,8 @@ PATCH  http://localhost:3000/api/users/3
 Content-Type: application/json
 
 {
-  "firstName": "Marco Aurelio",
-  "lastName": "Hansen"
+  "firstName": "Gustavo",
+  "lastName": "TF"
 }
 
 ###
