@@ -1,4 +1,9 @@
-export interface IValidationError {
-  field: string;
-  messages: string[];
+declare global {
+  namespace Express {
+    interface Request {
+      user_id?: number;
+    }
+  }
 }
+
+export {};
