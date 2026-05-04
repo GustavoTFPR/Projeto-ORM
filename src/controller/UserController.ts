@@ -11,16 +11,11 @@ export class UserController {
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { firstName, lastName, phone, email, password } = req.body;
-      const exists = await this.userRepository.findOneBy({ email });
-      if (exists) {
-        throw new BadRequestError("Email fornecido já está em uso!");
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = this.userRepository.create({
         firstName,
         lastName,
         email,
-        password: hashedPassword,
+        password,
         phone,
       });
       const errors = await validate(newUser);
@@ -28,6 +23,12 @@ export class UserController {
         const formattedErrors = formatErrors(errors);
         throw new BadRequestError("Falha de validação", formattedErrors);
       }
+      const exists = await this.userRepository.findOneBy({ email });
+      if (exists) {
+        throw new BadRequestError("Email fornecido já está em uso!");
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      newUser.password = hashedPassword;
       await this.userRepository.save(newUser);
       const { password: _, ...userPublic } = newUser;
       return res.status(201).json(userPublic);
@@ -38,22 +39,24 @@ export class UserController {
 
   update = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const id = Number(req.params.id);
       const { firstName, lastName, email, phone, password } = req.body;
-      if (isNaN(id)) {
-        throw new BadRequestError("ID inválido");
+      const id = req.user_id;
+      const tempData = this.userRepository.create({
+        firstName,
+        lastName,
+        email,
+        phone,
+        password,
+      });
+      const errors = await validate(tempData, { skipMissingProperties: true });
+      if (errors.length > 0) {
+        throw new BadRequestError("Falha de validação", formatErrors(errors));
       }
       const user = await this.userRepository.findOneBy({ id });
-      if (!user) {
-        throw new NotFoundError("Usuário não encontrado");
-      }
+      if (!user) throw new NotFoundError("Usuário não encontrado");
       if (email && email !== user.email) {
         const exists = await this.userRepository.findOneBy({ email });
-        if (exists) {
-          throw new BadRequestError(
-            "Este e-mail já está em uso por outro usuário!"
-          );
-        }
+        if (exists) throw new BadRequestError("Este e-mail já está em uso!");
         user.email = email;
       }
       user.firstName = firstName ?? user.firstName;
@@ -62,15 +65,10 @@ export class UserController {
       if (password) {
         user.password = await bcrypt.hash(password, 10);
       }
-      const errors = await validate(user, { skipMissingProperties: true });
-      if (errors.length > 0) {
-        const formattedErrors = formatErrors(errors);
-        throw new BadRequestError("Falha de validação", formattedErrors);
-      }
       await this.userRepository.save(user);
       const { password: _, ...userPublic } = user;
       return res.status(200).json(userPublic);
-    } catch (error: unknown) {
+    } catch (error) {
       next(error);
     }
   };

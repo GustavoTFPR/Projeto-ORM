@@ -1,9 +1,4 @@
-declare global {
-  namespace Express {
-    interface Request {
-      user_id?: number;
-    }
-  }
+export interface IValidationError {
+  field: string;
+  messages: string[];
 }
-
-export {};
